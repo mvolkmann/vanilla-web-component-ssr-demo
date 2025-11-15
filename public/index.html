@@ -4,8 +4,8 @@
     <title>Vanilla Web Component SSR</title>
     <link rel="stylesheet" href="styles.css" />
     <script type="module">
-      // If this import is removed, the SSR component still renders correctly,
-      // but it will not be upgraded to a custom element and
+      // If these imports are removed, SSR components still renders correctly,
+      // but they will not be upgraded to custom elements and
       // will not have any functionality (clicking does nothing).
       import "./hello-world.js";
       import "./radio-group.js";
@@ -33,7 +33,10 @@
         const button2 = document.getElementById("radio-group-btn");
         button2.addEventListener("click", async () => {
           const url =
-            "/radio-group?name=season&labels=Spring,Summer,Fall,Winter&values=spring,summer,fall,winter&value=summer";
+            "/radio-group?" +
+            "name=season&" +
+            "labels=Spring,Summer,Fall,Winter&" +
+            "values=spring,summer,fall,winter&value=summer";
           const res = await fetch(url);
           const html = await res.text();
           button2.insertAdjacentHTML("afterend", html);

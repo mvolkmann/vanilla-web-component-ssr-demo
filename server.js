@@ -27,4 +27,6 @@ app.get("/radio-group", (c) => {
   `);
 });
 
-serve(app);
+serve(app, (info) => {
+  console.log(`listing on port ${info.port}`);
+});
