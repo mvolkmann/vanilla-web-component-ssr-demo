@@ -10,22 +10,6 @@
       import "./hello-world.js";
       import "./radio-group.js";
 
-      // Inserting HTML that describes a server-rendered web component
-      // into the DOM by setting the innerHTML property or
-      // calling the Element method insertAdjacentHTML results in the
-      // error message "Found declarative shadowrootmode attribute on
-      // a template, but declarative Shadow DOM is not being parsed".
-      // This function provides an alternative that avoids that.
-      function insertHTML(html, target) {
-        const parser = new DOMParser();
-        const source = parser.parseFromString(html, "text/html");
-        const fragment = document.createDocumentFragment();
-        while (source.firstChild) {
-          fragment.appendChild(source.firstChild);
-        }
-        target.after(fragment);
-      }
-
       // Listen for changes to the color selected
       // in the first `radio-group` custom element, and change
       // the color of all `hello-world` custom elements to match.
@@ -42,7 +26,16 @@
       button1.addEventListener("click", async () => {
         const res = await fetch("/hello-world?name=SSR");
         const html = await res.text();
-        insertHTML(html, button1);
+
+        // This works, but gives the warning
+        // "Found declarative shadowrootmode attribute on a template,
+        // but declarative Shadow DOM is not being parsed.
+        // Use setHTMLUnsafe() or parseHTMLUnsafe() instead."
+        // There is no warning in Firefox or Safari.
+        //button1.insertAdjacentHTML("afterend", html);
+
+        // This avoids the warning described above.
+        document.getElementById("hello-world").setHTMLUnsafe(html);
       });
 
       const button2 = document.getElementById("radio-group-btn");
@@ -54,7 +47,7 @@
           "values=spring,summer,fall,winter&value=summer";
         const res = await fetch(url);
         const html = await res.text();
-        insertHTML(html, button2);
+        document.getElementById("radio-group").setHTMLUnsafe(html);
 
         // Listen for changes to the color selected
         // in the first `radio-group` custom element, and change
@@ -79,6 +72,11 @@
     ></radio-group>
 
     <button id="hello-world-btn">hello-world SSR</button>
+    <div id="hello-world"></div>
+
     <button id="radio-group-btn">radio-group SSR</button>
+    <div id="radio-group"></div>
+
+    <a href="/new-page">New Page</a>
   </body>
 </html>
