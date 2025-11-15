@@ -26,47 +26,45 @@
         target.after(fragment);
       }
 
-      window.onload = () => {
+      // Listen for changes to the color selected
+      // in the first `radio-group` custom element, and change
+      // the color of all `hello-world` custom elements to match.
+      const radioGroup = document.querySelector("radio-group[name=color]");
+      radioGroup.addEventListener("change", (e) => {
+        const { value } = e.detail;
+        const helloWorlds = document.querySelectorAll("hello-world");
+        for (const helloWorld of helloWorlds) {
+          helloWorld.style.color = value;
+        }
+      });
+
+      const button1 = document.getElementById("hello-world-btn");
+      button1.addEventListener("click", async () => {
+        const res = await fetch("/hello-world?name=SSR");
+        const html = await res.text();
+        insertHTML(html, button1);
+      });
+
+      const button2 = document.getElementById("radio-group-btn");
+      button2.addEventListener("click", async () => {
+        const url =
+          "/radio-group?" +
+          "name=season&" +
+          "labels=Spring,Summer,Fall,Winter&" +
+          "values=spring,summer,fall,winter&value=summer";
+        const res = await fetch(url);
+        const html = await res.text();
+        insertHTML(html, button2);
+
         // Listen for changes to the color selected
         // in the first `radio-group` custom element, and change
         // the color of all `hello-world` custom elements to match.
-        const radioGroup = document.querySelector("radio-group[name=color]");
+        const radioGroup = document.querySelector("radio-group[name=season]");
         radioGroup.addEventListener("change", (e) => {
-          const { value } = e.detail;
-          const helloWorlds = document.querySelectorAll("hello-world");
-          for (const helloWorld of helloWorlds) {
-            helloWorld.style.color = value;
-          }
+          const { label } = e.detail;
+          alert(`You selected ${label}.`);
         });
-
-        const button1 = document.getElementById("hello-world-btn");
-        button1.addEventListener("click", async () => {
-          const res = await fetch("/hello-world?name=SSR");
-          const html = await res.text();
-          insertHTML(html, button1);
-        });
-
-        const button2 = document.getElementById("radio-group-btn");
-        button2.addEventListener("click", async () => {
-          const url =
-            "/radio-group?" +
-            "name=season&" +
-            "labels=Spring,Summer,Fall,Winter&" +
-            "values=spring,summer,fall,winter&value=summer";
-          const res = await fetch(url);
-          const html = await res.text();
-          insertHTML(html, button2);
-
-          // Listen for changes to the color selected
-          // in the first `radio-group` custom element, and change
-          // the color of all `hello-world` custom elements to match.
-          const radioGroup = document.querySelector("radio-group[name=season]");
-          radioGroup.addEventListener("change", (e) => {
-            const { label } = e.detail;
-            alert(`You selected ${label}.`);
-          });
-        });
-      };
+      });
     </script>
   </head>
   <body>
