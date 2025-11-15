@@ -10,6 +10,22 @@
       import "./hello-world.js";
       import "./radio-group.js";
 
+      // Inserting HTML that describes a server-rendered web component
+      // into the DOM by setting the innerHTML property or
+      // calling the Element method insertAdjacentHTML results in the
+      // error message "Found declarative shadowrootmode attribute on
+      // a template, but declarative Shadow DOM is not being parsed".
+      // This function provides an alternative that avoids that.
+      function insertHTML(html, target) {
+        const parser = new DOMParser();
+        const source = parser.parseFromString(html, "text/html");
+        const fragment = document.createDocumentFragment();
+        while (source.firstChild) {
+          fragment.appendChild(source.firstChild);
+        }
+        target.after(fragment);
+      }
+
       window.onload = () => {
         // Listen for changes to the color selected
         // in the first `radio-group` custom element, and change
@@ -27,7 +43,7 @@
         button1.addEventListener("click", async () => {
           const res = await fetch("/hello-world?name=SSR");
           const html = await res.text();
-          button1.insertAdjacentHTML("afterend", html);
+          insertHTML(html, button1);
         });
 
         const button2 = document.getElementById("radio-group-btn");
@@ -39,7 +55,7 @@
             "values=spring,summer,fall,winter&value=summer";
           const res = await fetch(url);
           const html = await res.text();
-          button2.insertAdjacentHTML("afterend", html);
+          insertHTML(html, button2);
 
           // Listen for changes to the color selected
           // in the first `radio-group` custom element, and change
